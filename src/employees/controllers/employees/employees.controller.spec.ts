@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EmployeesController } from './employees.controller';
 import { EmployeesService } from 'src/employees/services/employees/employees.service';
 import { employeeDto } from '../../employee.dto';
+import { Response } from 'express';
 
 
 
@@ -18,7 +19,8 @@ describe('EmployeesController', () => {
         provide: 'EMPLOYEE_SERVICE',
         useValue: {
           findAll: jest.fn((x) => x),
-          findOne: jest.fn((x) => ({'name': x, 'dept': 'rimo'}))
+          findOne: jest.fn((x) => ({'name': x, 'dept': 'rimo'})),
+          remove: jest.fn((x)=>x)
         }
     }],
     }).compile();
@@ -61,6 +63,20 @@ describe('EmployeesController', () => {
       const response  = await controller.getEmployeeFromId(x);
       expect(response.rows).toEqual({'name': x, 'dept': 'rimo'})
     })
+  })
+
+  describe('Remove employee', ()=>{
+
+    let resMock = {
+      status: jest.fn(x => x)
+    } as unknown as Response
+    let empMock = {'name': 'Raks', 'dept': 'rimo'}
+
+    it('Should have status 200',async ()=>{
+      const response = await controller.removeEmployee(empMock, resMock);
+      expect(resMock.status).toHaveBeenCalledWith(200)
+    })
+
   })
 
 });
